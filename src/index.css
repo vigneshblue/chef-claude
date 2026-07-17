@@ -94,6 +94,10 @@ ul.ingredients-list > li {
 }
 
 .get-recipe-container button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 120px;
   border: none;
   border-radius: 6px;
   background: #D17557;

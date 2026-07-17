@@ -1,3 +1,5 @@
+import { ThreeDots } from "react-loader-spinner";
+
 export default function IngredientList(props) {
   const ingredientsElements = props.ingredients.map(ingredient => (
     <li key={ingredient}>{ingredient}</li>
@@ -12,7 +14,14 @@ export default function IngredientList(props) {
                 <h3>Ready for a recipe?</h3>
                 <p>Generate a recipe from your list of ingredients.</p>
             </div>
-            <button onClick={(props.getRecipe)}>Get a recipe</button>
+            <button onClick={(props.getRecipe)}>{props.loading ? (
+              <ThreeDots
+                height={20}
+                width={40}
+                color="#ffffff"
+              />
+              ) : "Get Recipe"
+             }</button>
         </div>}
       </section>
     </main>

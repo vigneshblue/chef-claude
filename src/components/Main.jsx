@@ -1,17 +1,40 @@
 import React from 'react'
 import IngredientList from './IngredientList'
 import ClaudeRecipe from './ClaudeRecipe'
+// import { getRecipeFromMistral } from '../ai'
+
 export default function Main() {
   const [ingredients, setIngredients] = React.useState([])
-  const [recipeShown, setRecipeShown] = React.useState(false)
+  const [recipeMarkdown, setRecipeMarkdown] = React.useState("")
+  const recipeSection = React.useRef(null)
+
+  React.useEffect(() => {
+    if (recipeMarkdown !== "" && recipeSection !== null) {
+      recipeSection.current.scrollIntoView({behavior: "smooth"})
+    }
+  },[recipeMarkdown])
 
   function addIngredient(formData) {
     const newIngredient = formData.get("ingredient")
     setIngredients(prevIngredients => [...prevIngredients, newIngredient])
   }
 
-  function toggleRecipeShown() {
-    setRecipeShown(prev => !prev)
+  async function getRecipe() {
+    // const recipeMarkdown = await getRecipeFromMistral(ingredients)
+    const response = await fetch("/api/recipe", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ingredientsString:  ingredients.join(", "),
+      }),
+    });
+    const data = await response.json();
+    console.log(data.recipe);
+
+    setRecipeMarkdown(data.recipe)
+    console.log('ai call completed')
   }
 
   return (
@@ -25,8 +48,8 @@ export default function Main() {
         />
         <button>Add ingredient</button>
       </form>
-      { ingredients.length > 0 && <IngredientList ingredients={ingredients} toggleRecipeShown={toggleRecipeShown} /> }
-      { recipeShown && <ClaudeRecipe /> }
+      { ingredients.length > 0 && <IngredientList ref={recipeSection} ingredients={ingredients} getRecipe={getRecipe} /> }
+      { recipeMarkdown.length > 0 && <ClaudeRecipe recipeMarkdown={recipeMarkdown}/> }
     </main>
   )
 }
